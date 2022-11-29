@@ -1,8 +1,15 @@
 from collections import UserDict
-from console_output import show_in_console
+from tabulate import tabulate
+from abc import ABC, abstractmethod
 
 
-class Notes(UserDict):
+class ConsoleOutputABC(ABC):
+    @abstractmethod
+    def console_output(data: list, headers='firstrow', format='fancy_grid'):
+        print(tabulate(data, headers=headers, tablefmt=format, showindex='always'))
+
+
+class Notes(ConsoleOutputABC,UserDict):
 
     # note handling
     def add_note(self, title, keywords, notedata):
@@ -41,13 +48,13 @@ class Notes(UserDict):
         data = ((self.data[str(title)].title,
                 self.data[str(title)].keywords,
                 self.data[str(title)].notedata),)
-        show_in_console(data, header)
+        super.console_output(data, header)
 
     def show_all(self):
         data = [[str(i.title), str(i.keywords), str(i.notedata)]
                 for i in self.data.values()]
         header = ('Title', 'Keywords', 'Data')
-        show_in_console(data, header)
+        super.console_output(data, header)
 
     def show_notes_with_tag(self, tag):
         data = [[str(rec.title), str(rec.keywords), str(rec.notedata)]
@@ -55,7 +62,7 @@ class Notes(UserDict):
                 if tag in str(rec.keywords)]
         header = ('Title', 'Keywords', 'Data')
         if data:
-            show_in_console(data, header)
+            super.console_output(data, header)
         else:
             return f'You have no notes with tag "{tag}"'
 

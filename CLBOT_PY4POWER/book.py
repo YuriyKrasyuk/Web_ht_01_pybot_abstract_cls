@@ -1,9 +1,16 @@
 from collections import UserDict
 from datetime import datetime, timedelta
-from console_output import show_in_console
+from tabulate import tabulate
+from abc import ABC, abstractmethod
 
 
-class Book(UserDict):
+class ConsoleOutputABC(ABC):
+    @abstractmethod
+    def console_output(data: list, headers='firstrow', format='fancy_grid'):
+        print(tabulate(data, headers=headers, tablefmt=format, showindex='always'))
+
+
+class Book(ConsoleOutputABC,UserDict):
 
     # work with contact
     def add_contact(self, name, phones, email, birthday, address):
@@ -41,7 +48,7 @@ class Book(UserDict):
                 or search_data in str(i.address).lower()]
         if data:
             headers = ('Name', 'Phones', 'Email', 'Birthday', 'Address')
-            show_in_console(data, headers, 'rounded_outline')
+            super.console_output(data, headers, 'rounded_outline')
         else:
             return f"-!- No contacts with data {search_data} -!-"
 
@@ -50,7 +57,7 @@ class Book(UserDict):
                 str(i.email), str(i.birthday), str(i.address)]
                 for i in self.data.values()]
         headers = ('Name', 'Phones', 'Email', 'Birthday', 'Address')
-        show_in_console(data, headers, "mixed_grid")
+        super.console_output(data, headers, "mixed_grid")
 
     # name handling
     def change_name(self, old_name, new_name):
@@ -147,7 +154,7 @@ class Book(UserDict):
                     and datetime.strptime(i.birthday.value, '%d.%m.%Y').month == check_day.month]
             if data:
                 headers = ('Name', 'Phones', 'Email', 'Birthday', 'Address')
-                show_in_console(data, headers, 'rounded_outline')
+                super.show_in_console_a(data, headers, 'rounded_outline')
                 return
             else:
                 return f"-!- No contacts with birthday on {check_day.date()} -!-"
@@ -205,7 +212,6 @@ class ContactField:
         self.__value = new_value
 
 
-# Прописати __str__
 class Name(ContactField):
     def __str__(self):
         return self.value.capitalize().strip()
